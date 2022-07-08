@@ -80,20 +80,22 @@ public class Assembler {
                         address = Integer.toBinaryString(temPC);
                         if(address.length() > 26)
                             address = address.substring(address.length() - 26, address.length());
+
+                        address = zero26.substring(0, 26-address.length()) + address;
                         finalMachineCode = opcode + address;
                         exchangeToBoolean(finalMachineCode , jumpNOLable.get(key));
                         keys.add(key);
                         }
                     else if(opcode.charAt(3) == '1'){
-                        singleInstruction = getType.nextLine();
+                        singleInstruction = key;
                         getTwoBranchReg();
                         String zero16 = "0000000000000000";
-                        int pctemp = pc - jumpNOLable.get(key);
+                        int pctemp = (pc - jumpNOLable.get(key))/4 -1;
                         constant = Integer.toBinaryString(pctemp);
                         if(constant.length() > 16)
                             constant = constant.substring(constant.length()-16 , constant.length());
                         constant = zero16.substring(0, 16 - constant.length()) + constant;
-                        finalMachineCode = opcode + rs + rd + constant;
+                        finalMachineCode = opcode + rs + rt + constant;
                         exchangeToBoolean(finalMachineCode , jumpNOLable.get(key));
                         keys.add(key);
                     }
@@ -143,6 +145,7 @@ public class Assembler {
                     address = Integer.toBinaryString(temPC);
                     if(address.length() > 26)
                         address = address.substring(address.length() - 26, address.length());
+                    address = zero26.substring(0, 26-address.length()) + address;
                     finalMachineCode = opcode + address;
                     exchangeToBoolean(finalMachineCode , pc);
                 }else
@@ -153,12 +156,12 @@ public class Assembler {
                 if(lablesNotUsed.containsKey(branchLable)){
                     getTwoBranchReg();
                     String zero16 = "0000000000000000";
-                    int pctemp = lablesNotUsed.get(branchLable) - pc ;
+                    int pctemp = (lablesNotUsed.get(branchLable) - pc)/4 - 1 ;
                     constant = Integer.toBinaryString(pctemp);
                     if(constant.length() > 16)
                         constant = constant.substring(constant.length()-16 , constant.length());
                     constant = zero16.substring(0, 16 - constant.length()) + constant;
-                    finalMachineCode = opcode + rs + rd + constant;
+                    finalMachineCode = opcode + rs + rt + constant;
                     exchangeToBoolean(finalMachineCode , pc);
                 }else
                     jumpNOLable.put(instCopy, pc);
@@ -207,6 +210,7 @@ public class Assembler {
             if(isReach && '0' <= singleInstruction.charAt(index) && singleInstruction.charAt(index) <= '9'){
                 number += singleInstruction.charAt(index);
             }
+            index ++;
         }
         isReach = false;
         rs = Integer.toBinaryString(Byte.parseByte(number));
@@ -224,6 +228,7 @@ public class Assembler {
             if(isReach && '0' <= singleInstruction.charAt(index) && singleInstruction.charAt(index) <= '9'){
                 number += singleInstruction.charAt(index);
             }
+            index ++;
         }
         rt = Integer.toBinaryString(Byte.parseByte(number));
         rt = fiveZero.substring(0, 5 - rt.length()) + rt;
