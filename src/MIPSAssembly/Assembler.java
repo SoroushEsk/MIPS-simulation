@@ -1,5 +1,13 @@
 package MIPSAssembly;
+/*
+In this class the only job is to get and fetch the instructions
+and turned them in to the machine code
 
+the only function in this class that you need is Assember.getInstructions()
+
+the manual of how to give the instruction to the program will appear when you
+run the code
+ */
 
 
 import java.util.ArrayList;
@@ -13,6 +21,8 @@ public class Assembler {
     private static HashMap<String, String> instructionOpcode = new HashMap<>();
     private static HashMap<String, String> instFunction = new HashMap<>();
 
+
+// different components that a machine code of mips can have
     private static String opcode;
     private static String rs;
     private static String constant;
@@ -23,16 +33,18 @@ public class Assembler {
     private static String address;
 
     public static int pc = 0;
-
+// set of zero and ones of each line of state will save in :
     private static String finalMachineCode = "";
 
+// Using these two for lables and jump and branch statements
     private static HashMap<String, Integer> lablesNotUsed= new HashMap<>();
     private static HashMap<String, Integer> jumpNOLable = new HashMap<>();
 
     private static String singleInstruction;
 
+//The final machine code after the "end" will be in :
     private static Boolean[][] memory = new Boolean[65536][8];
-
+//------------------------------------------------------------
     public static Boolean[][] getInstructions(){
         setInstructionOpcode();
         setInstFunction();
@@ -45,6 +57,9 @@ public class Assembler {
 
         String tmp;
         boolean isLable = false;
+        System.out.println("Enter instruction Like example (each instruction takes one Line)");
+        System.out.println("add $3, $7, $31 ->> don't use the reg's name just number is enough");
+        System.out.println("when you finished type \'end\' at finish line");
         while(!((tmp = input.nextLine().toLowerCase()).equals("end"))){
             finalMachineCode = "";
             isLable = false;
@@ -58,8 +73,11 @@ public class Assembler {
             if(!isLable)
                 pc += 4;
         }
+        System.out.println("----------------------------------");
+        if(!jumpNOLable.isEmpty()) memory = null;
         return memory;
     }
+
     private static void recognizeInstrucion(){
         Scanner type = new Scanner(singleInstruction);
         String instCopy = singleInstruction;
