@@ -3,6 +3,7 @@ package RegisterFile;
 import simulator.control.Simulator;
 import simulator.gates.combinational.And;
 import simulator.gates.combinational.Not;
+import simulator.gates.combinational.Or;
 import simulator.network.Link;
 import simulator.wrapper.Wrapper;
 import simulator.wrapper.wrappers.Decoder;
@@ -37,7 +38,6 @@ public class RegisterFile extends Wrapper {
         }
 
 
-
         //creating instance of register class
         for(int reg = 0; reg < 32 ; reg ++){
             registers[reg] = new Register("Register" + reg, "34X32", getInput(0));
@@ -51,9 +51,9 @@ public class RegisterFile extends Wrapper {
                 read1Mux[muxI].addInput(registers[regCounter].getOutput(muxI));
             }
         }
-        for(int out1 = 0 ; out1 < 32 ; out1++)
+        for(int out1 = 0 ; out1 < 32 ; out1++) {
             addOutput(read1Mux[out1].getOutput(0));
-
+        }
 
         // choose output for register read 2
         Multiplexer[] read2Mux = new Multiplexer[32];
@@ -75,17 +75,35 @@ public class RegisterFile extends Wrapper {
         And and = new And ("and", not.getOutput(0), getInput(16));
         Link writeSignal = and.getOutput(0);
         // by anding the two signal up there find and set write register
+        And andAll = new And("andAll");
+        for(int i=0; i<32; i++)
+            andAll.addInput(registers[0].getOutput(i));
+
         Link[] content = new Link[32];
+        Mul2To1[] mul2To1s = new Mul2To1[32];
+        for(int i = 0; i<32; i++){
+            mul2To1s[i] = new Mul2To1("mul2x1" + i, "3x1");
+            mul2To1s[i].addInput(getInput(i+17));
+            mul2To1s[i].addInput(Simulator.falseLogic);
+            mul2To1s[i].addInput(andAll.getOutput(0));
+        }
         for(int bit = 0 ; bit < 32 ; bit++){
             // 17 because it's the start of the 32bit content to be written
-            content[bit] = getInput(bit + 17);
+            content[bit] = mul2To1s[bit].getOutput(0);
         }
 
         for(int wrt = 0 ; wrt < 32 ; wrt++){
             And tmp = new And("AndTemp", findWrite.getOutput(wrt), writeSignal);
+            Or tmp1 = new Or("orTemp", tmp.getOutput(0), andAll.getOutput(0));
             registers[wrt].addInput(content);
-            registers[wrt].addInput(tmp.getOutput(0));
+            registers[wrt].addInput(tmp1.getOutput(0));
         }
+
+
+        for(int reg = 0; reg < 32 ; reg++)
+            Simulator.debugger.addTrackItem(registers[reg]);
+            Simulator.debugger.addTrackItem(andAll);
+
 
    }
 

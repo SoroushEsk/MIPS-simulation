@@ -11,7 +11,7 @@ public class Mul2To1 extends Wrapper {
     public Mul2To1(String label, String stream, Link... links) {
         super(label, stream, links);
     }
-    // multiplexer 2bit to 1 ==>> stream = 3X1
+    // multiplexer 2bit to 1
     // inputs index:
     // 0 first bit
     // 1 : second bit

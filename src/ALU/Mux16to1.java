@@ -11,7 +11,7 @@ public class Mux16to1 extends Wrapper {
 
     @Override
     public void initialize() {
-        Multiplexer multiplexer = new Multiplexer("mux16to1", "16x1");
+        Multiplexer multiplexer = new Multiplexer("mux16to1", "20x1");
         // first 4 bit for addressing
         for (int i = 0; i < 4; i++) {
             multiplexer.addInput(getInput(i));

@@ -7,7 +7,6 @@ public class Mul64To32 extends Wrapper {
     public Mul64To32(String label, String stream, Link... links) {
         super(label, stream, links);
     }
-    // stream = 65X32
     //Input arrangement by index:
     // 0-31  : first 32 bit
     // 32-63 : second 32 bit

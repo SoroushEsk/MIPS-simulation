@@ -40,7 +40,7 @@ public class Debugger {
             for (Linkable linkable : trackList) {
                 System.out.print(linkable.getLabel() + "[" + linkable.getId() + "]" + ": ");
                 for (Link link : linkable.getOutputs()) {
-                    System.out.print(link.getSignal() == true ? 1 + " ":0 + " ");
+                    System.out.print(link.getSignal() == true ? 1 +" " : 0 + " ");
                 }
                 System.out.println();
             }

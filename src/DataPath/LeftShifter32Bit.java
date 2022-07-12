@@ -1,7 +1,7 @@
 // Completely Done
 
 
-package central_processor_unit;
+package DataPath;
 
 
 import simulator.wrapper.Wrapper;

@@ -1,3 +1,5 @@
+package DataPath;
+
 import RegisterFile.Mul2To1;
 import RegisterFile.Mul64To32;
 import simulator.control.Simulator;

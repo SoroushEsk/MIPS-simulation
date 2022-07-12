@@ -13,7 +13,7 @@ public class Not32 extends Wrapper {
     public void initialize() {
         Not[] nots = new Not[32];
         for (int i = 0; i < 32; i++) {
-            nots[i] = new Not("nots" + i, getInput(i), getInput(i+32));
+            nots[i] = new Not("nots" + i, getInput(i));
         }
         for (int i = 0; i < 32; i++) {
             addOutput(nots[i].getOutput(0));
