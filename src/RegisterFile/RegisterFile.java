@@ -77,7 +77,7 @@ public class RegisterFile extends Wrapper {
         // by anding the two signal up there find and set write register
         And andAll = new And("andAll");
         for(int i=0; i<32; i++)
-            andAll.addInput(registers[0].getOutput(i));
+            andAll.addInput(registers[1].getOutput(i));
 
         Link[] content = new Link[32];
         Mul2To1[] mul2To1s = new Mul2To1[32];
@@ -91,8 +91,10 @@ public class RegisterFile extends Wrapper {
             // 17 because it's the start of the 32bit content to be written
             content[bit] = mul2To1s[bit].getOutput(0);
         }
-
-        for(int wrt = 0 ; wrt < 32 ; wrt++){
+        for (int i = 0 ; i < 32 ;i++)
+            registers[0].addInput(Simulator.falseLogic);
+        registers[0].addInput(Simulator.trueLogic);
+        for(int wrt = 1 ; wrt < 32 ; wrt++){
             And tmp = new And("AndTemp", findWrite.getOutput(wrt), writeSignal);
             Or tmp1 = new Or("orTemp", tmp.getOutput(0), andAll.getOutput(0));
             registers[wrt].addInput(content);
@@ -100,8 +102,10 @@ public class RegisterFile extends Wrapper {
         }
 
 
-        for(int reg = 0; reg < 32 ; reg++)
+        for(int reg = 2; reg < 32 ; reg++) {
+            if(reg == 26 || reg == 27) continue;
             Simulator.debugger.addTrackItem(registers[reg]);
+        }
             Simulator.debugger.addTrackItem(andAll);
 
 
