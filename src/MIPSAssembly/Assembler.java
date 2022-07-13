@@ -87,7 +87,11 @@ public class Assembler {
         if(isLable) {
             ArrayList<String>keys = new ArrayList<>();
             String mainLable = findLableInInstruction(instCopy).trim();
+
+
             lablesNotUsed.put(mainLable, pc);
+
+
             for(String key : jumpNOLable.keySet()){
                 if(key.contains(mainLable)){
                     Scanner getType = new Scanner(key);
@@ -101,7 +105,9 @@ public class Assembler {
 
                         address = zero26.substring(0, 26-address.length()) + address;
                         finalMachineCode = opcode + address;
+
                         exchangeToBoolean(finalMachineCode , jumpNOLable.get(key));
+
                         keys.add(key);
                         }
                     else if(opcode.charAt(3) == '1'){
@@ -126,6 +132,7 @@ public class Assembler {
 
         opcode = instructionOpcode.get(tmpType);
         singleInstruction = type.nextLine();
+
         if(opcode.equals("000000")){
             function = instFunction.get(tmpType);
             if(function.charAt(0) == '0'){

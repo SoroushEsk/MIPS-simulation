@@ -365,7 +365,7 @@ public class Main {
         for ( int i = 0 ; i < 32 ; i++)
             Simulator.debugger.addTrackItem(showRegisters[i]);
         Simulator.debugger.setDelay(0);
-        Simulator.circuit.startCircuit((Assembler.pc)>>1);
+        Simulator.circuit.startCircuit((Assembler.pc));
     }
 
 

@@ -102,12 +102,6 @@ public class RegisterFile extends Wrapper {
             registers[wrt].addInput(content);
             registers[wrt].addInput(tmp1.getOutput(0));
         }
-        // java code for giving register to debugger at the Main Class
-
-//        for(int reg = 2; reg < 32 ; reg++) {
-//            if(reg == 26 || reg == 27) continue;
-//            Simulator.debugger.addTrackItem(registers[reg]);
-//        }
 
 
    }
