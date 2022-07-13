@@ -21,6 +21,8 @@ import simulator.wrapper.wrappers.DFlipFlop;
 import ALU.AddSub;
 
 public class Main {
+
+    public static Register[] showRegisters = null;
     public static void main(String[] args) {
 
 //____________________set Instruction MEM--------------------
@@ -34,13 +36,16 @@ public class Main {
             }
         }catch (Exception e){
             System.out.println("Invalid set of instructions!!");
+            return;
         }
 
 //__________________________set pc_____________________________
         BigClock clk = new BigClock("Clk");
         Not nClk = new Not("~Clock", clk.getOutput(0));
 
-//
+  //DFlipFlop helpFF = new DFlipFlop("helpFF", "2x2", clk.getOutput(0));
+
+
         DFlipFlop flipFlop = new DFlipFlop("MuxSelector", "2X2", nClk.getOutput(0), Simulator.falseLogic);
 
         Register PC = new Register("PC" , "34X32", clk.getOutput(0));
@@ -71,8 +76,8 @@ public class Main {
 
         add1.addInput(Simulator.falseLogic);
 //
-        Register pcHelpReg = new Register("HelpReg", "34x32", clk.getOutput(0));
-        //DFlipFlop helpFF = new DFlipFlop("helpFF", "2x2", clk.getOutput(0));
+        Register pcHelpReg = new Register("HelpReg", "34x32", nClk.getOutput(0));
+
         Or andUnusualPcMove = new Or("pcHelpAnd" ); // jump or jr or beq or bnq
 
 //        Mul2To1[] finalPcVal = new Mul2To1[32];
@@ -82,7 +87,6 @@ public class Main {
 //            finalPcVal[i].addInput(add1.getOutput(i), pcHelpReg.getOutput(i));
 //            finalPcVal[i].addInput(andUnusualPcMove.getOutput(0)); //  not sure if Q or ~Q
 //        }
-        Simulator.debugger.addTrackItem(andUnusualPcMove);
         Mul2To1[] helpOrPc = new Mul2To1[32];
         for(int i = 0 ; i <  32 ; i++){
             helpOrPc[i] = new Mul2To1("helpOrPc" + i, "3x1");
@@ -227,11 +231,12 @@ public class Main {
         branchAdder.addInput(Simulator.falseLogic);
 
         Mul2To1[] branchMuxs = new Mul2To1[32];
+
         And branchAnd = new And("bnchAdd",cu.getOutput(7), alu.getOutput(32));      //signal = beq, zero
 
         for (int i = 0; i < 32; i++) {
             branchMuxs[i] = new Mul2To1("bnchMux"+i, "3x1");
-            branchMuxs[i].addInput(add.getOutput(i), branchAdder.getOutput(i));
+            branchMuxs[i].addInput(PC.getOutput(i), branchAdder.getOutput(i));
             branchMuxs[i].addInput(branchAnd.getOutput(0));
         }
 
@@ -242,7 +247,7 @@ public class Main {
         And branchNotAnd = new And("bnchAdd",cu.getOutput(8), branchNotZero.getOutput(0));
         for (int i = 0; i < 32; i++) {
             bneMuxs[i] = new Mul2To1("bneMux"+i, "3x1");
-            bneMuxs[i].addInput(branchMuxs[i].getOutput(0), branchShift.getOutput(i));
+            bneMuxs[i].addInput(branchMuxs[i].getOutput(0), branchAdder.getOutput(i));
             bneMuxs[i].addInput(branchNotAnd.getOutput(0));                                              //signal = bne
         }
 
@@ -277,14 +282,13 @@ public class Main {
 //----------------------------PC write help-----------------------
 
 
-andUnusualPcMove.addInput(cu.getOutput(12), aluControl.getOutput(0),branchAnd.getOutput(0),
+        andUnusualPcMove.addInput(cu.getOutput(12), aluControl.getOutput(0),branchAnd.getOutput(0),
         branchNotAnd.getOutput(0));
-//        helpFF.addInput(andUnusualPcMove.getOutput(0));
 
         for (int i = 0; i < 32; i++) {
             pcHelpReg.addInput(jrMuxs[i].getOutput(0));
         }
-        pcHelpReg.addInput(nClk.getOutput(0));            // not sure if trueLogic!!!
+        pcHelpReg.addInput(Simulator.trueLogic);            // not sure if trueLogic!!!
 //
 
 
@@ -329,9 +333,8 @@ andUnusualPcMove.addInput(cu.getOutput(12), aluControl.getOutput(0),branchAnd.ge
         }
         halfDMenOut.addInput(cu.getOutput(0));
         halfDMenOut.addInput(cu.getOutput(1));
-        Not dMemSWNot = new Not("dMemNot", cu.getOutput(9));                                 //signal = memWrite
-        And dMemUnsignedChooser = new And("dmemAnd", dMemSWNot.getOutput(0), cu.getOutput(2));
-        halfDMenOut.addInput(dMemUnsignedChooser.getOutput(0));
+        Not dMemSWNot = new Not("dMemNot", instMemory.getOutput(3));                                 //signal = memWrite
+        halfDMenOut.addInput(dMemSWNot.getOutput(0));                      //      ZeroExt
 
 
 //__________________________write back___________________________
@@ -355,11 +358,15 @@ andUnusualPcMove.addInput(cu.getOutput(12), aluControl.getOutput(0),branchAnd.ge
             registerFile.addInput(jalMux[i].getOutput(0));
         }
 
-//
+//      show register required
 
 
-        Simulator.debugger.addTrackItem( clk ,PC,pcHelpReg,andUnusualPcMove,dataMemory,instMemory,registerFile);
+        Simulator.debugger.addTrackItem(clk ,PC,dataMemory,instMemory,cu,alu);
+        for ( int i = 0 ; i < 32 ; i++)
+            Simulator.debugger.addTrackItem(showRegisters[i]);
         Simulator.debugger.setDelay(0);
-        Simulator.circuit.startCircuit((Assembler.pc)+1);
+        Simulator.circuit.startCircuit((Assembler.pc)>>1);
     }
+
+
 }

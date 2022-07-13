@@ -35,7 +35,7 @@ public class HalfByteUnsigned extends Wrapper {
         byte0Half1.addInput(getInput(24));
         //add msb half
         byte0Half1.addInput(getInput(16));
-        byte0Half1.addInput(getInput(33));
+        byte0Half1.addInput(getInput(32));
 
         // choose if we need unsigned version or not:
         resultBit.addInput(Simulator.falseLogic);

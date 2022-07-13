@@ -1,5 +1,6 @@
 package RegisterFile;
 
+import DataPath.Main;
 import simulator.control.Simulator;
 import simulator.gates.combinational.And;
 import simulator.gates.combinational.Not;
@@ -27,6 +28,7 @@ public class RegisterFile extends Wrapper {
     @Override
     public void initialize() {
         Register[] registers = new Register[32];
+        Main.showRegisters = registers;
         //save the 5 bit reg number to avoid repetition
         Link[] read1 = new Link[5];
         Link[] read2 = new Link[5];
@@ -77,7 +79,7 @@ public class RegisterFile extends Wrapper {
         // by anding the two signal up there find and set write register
         And andAll = new And("andAll");
         for(int i=0; i<32; i++)
-            andAll.addInput(registers[1].getOutput(i));
+            andAll.addInput(registers[0].getOutput(i));
 
         Link[] content = new Link[32];
         Mul2To1[] mul2To1s = new Mul2To1[32];
@@ -100,13 +102,12 @@ public class RegisterFile extends Wrapper {
             registers[wrt].addInput(content);
             registers[wrt].addInput(tmp1.getOutput(0));
         }
+        // java code for giving register to debugger at the Main Class
 
-
-        for(int reg = 2; reg < 32 ; reg++) {
-            if(reg == 26 || reg == 27) continue;
-            Simulator.debugger.addTrackItem(registers[reg]);
-        }
-            Simulator.debugger.addTrackItem(andAll);
+//        for(int reg = 2; reg < 32 ; reg++) {
+//            if(reg == 26 || reg == 27) continue;
+//            Simulator.debugger.addTrackItem(registers[reg]);
+//        }
 
 
    }
